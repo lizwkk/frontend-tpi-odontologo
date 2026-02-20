@@ -29,6 +29,6 @@ export function useProfesionales() {
     agregarProfesional,
     eliminarProfesional,
     toggleActivo,
-    setProfesionales, // <-- útil para cuando traigas desde API
+    setProfesionales,
   };
 }

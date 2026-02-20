@@ -1,4 +1,5 @@
 import ListadoTurnos from "../componentes/turnos/ListadoTurnos";
+import { useTurnos } from "../contexto/TurnosContext";
 
 export default function MisTurnos() {
   const { turnos, cancelarTurno, eliminarTurno } = useTurnos();
