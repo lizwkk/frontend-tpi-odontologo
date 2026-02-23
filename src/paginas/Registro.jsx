@@ -10,40 +10,66 @@ export default function Registro() {
   function registrar(e) {
     e.preventDefault();
     // después conectamos backend
-    navigate("/");
+    navigate("/login");
   }
 
   return (
-    <div>
-      <h2>Registro</h2>
+    <div className="auth">
+      <div className="auth-card">
+        <h2 className="auth-title">Registro</h2>
 
-      <form onSubmit={registrar}>
-        <input
-          placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
+        <form className="auth-form" onSubmit={registrar}>
+          <label className="label">
+            Nombre
+            <input
+              className="field"
+              placeholder="Tu nombre"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              autoComplete="name"
+              required
+            />
+          </label>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          <label className="label">
+            Email
+            <input
+              className="field"
+              type="email"
+              placeholder="tuemail@mail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <label className="label">
+            Contraseña
+            <input
+              className="field"
+              type="password"
+              placeholder="Creá una contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              required
+            />
+          </label>
 
-        <button>Crear cuenta</button>
-      </form>
+          <button className="btn" type="submit">
+            Crear cuenta
+          </button>
+        </form>
 
-      <p onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-        Volver al login
-      </p>
+        <button className="linkLike" type="button" onClick={() => navigate("/login")}>
+          Volver al login
+        </button>
+
+        <button className="linkLike" type="button" onClick={() => navigate("/home")}>
+          Volver al inicio
+        </button>
+      </div>
     </div>
   );
 }

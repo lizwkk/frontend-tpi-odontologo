@@ -1,21 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./paginas/Home";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./paginas/Login";
 import Registro from "./paginas/Registro";
+import Home from "./paginas/Home";
 import Inicio from "./paginas/Inicio";
 import MisTurnos from "./paginas/MisTurnos";
-import "./App.css";
+import Admin from "./paginas/Admin";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Registro />} />
-        <Route path="/inicio" element={<Inicio />} />
-        <Route path="/mis-turnos" element={<MisTurnos />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/home" element={<Home />} />
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/registro" element={<Registro />} />
+
+      <Route path="/inicio" element={<Inicio />} />
+      <Route path="/mis-turnos" element={<MisTurnos />} />
+      <Route path="/admin" element={<Admin />} />
+
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
   );
 }

@@ -1,14 +1,17 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
+import "./App.css";
 
-// 🔴 ESTA LÍNEA ES LA QUE FALTABA O ESTÁ MAL
-import { TurnosProvider } from "./contexto/TurnosContext";
+import { TurnosProvider } from "./contexto/TurnosContext.jsx";
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <TurnosProvider>
-      <App />
-    </TurnosProvider>
-  </StrictMode>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <TurnosProvider>
+        <App />
+      </TurnosProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );

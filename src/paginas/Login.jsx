@@ -13,30 +13,54 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <h2>Iniciar sesión</h2>
+    <div className="auth">
+      <div className="auth-card">
+        <h2 className="auth-title">Iniciar sesión</h2>
 
-      <form onSubmit={iniciarSesion}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form className="auth-form" onSubmit={iniciarSesion}>
+          <label className="label">
+            Email
+            <input
+              className="field"
+              type="email"
+              placeholder="tuemail@mail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <label className="label">
+            Contraseña
+            <input
+              className="field"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </label>
 
-        <button>Entrar</button>
-      </form>
+          <button className="btn" type="submit">
+            Entrar
+          </button>
+        </form>
 
-      <p onClick={() => navigate("/registro")} style={{ cursor: "pointer" }}>
-        ¿No tenés cuenta? Registrate
-      </p>
+        <button
+          className="linkLike"
+          type="button"
+          onClick={() => navigate("/registro")}
+        >
+          ¿No tenés cuenta? Registrate
+        </button>
+
+        <button className="linkLike" type="button" onClick={() => navigate("/home")}>
+          Volver al inicio
+        </button>
+      </div>
     </div>
   );
 }
