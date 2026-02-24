@@ -4,14 +4,14 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import "./App.css";
 
-import { TurnosProvider } from "./contexto/TurnosContext.jsx";
+import { AuthProvider } from "./contexto/AuthContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <TurnosProvider>
+      <AuthProvider>
         <App />
-      </TurnosProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

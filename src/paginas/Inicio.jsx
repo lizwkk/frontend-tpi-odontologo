@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProfesionales } from "../hooks/useProfesionales";
 import { useTurnos } from "../contexto/TurnosContext";
+import { useAuth } from "../contexto/AuthContext";
 
 import FormularioProfesional from "../componentes/profesionales/FormularioProfesional";
 import ListadoProfesionales from "../componentes/profesionales/ListadoProfesionales";
@@ -9,7 +10,7 @@ import FormularioTurno from "../componentes/turnos/FormularioTurno";
 export default function Inicio() {
   const { profesionales, agregarProfesional, eliminarProfesional } =
     useProfesionales();
-
+  const { user } = useAuth();
   const { agregarTurno } = useTurnos();
 
   return (
