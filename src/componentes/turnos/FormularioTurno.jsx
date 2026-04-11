@@ -1,37 +1,43 @@
 import { useState } from "react";
 
-export default function FormularioTurno({ profesionales, agregarTurno }) {
-  const [profesionalId, setProfesionalId] = useState("");
+export default function FormularioTurno({ profesionales, crearTurno }) {
+  const [profesional_id, setProfesionalId] = useState("");
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
   const [notas, setNotas] = useState("");
+  const [error, setError] = useState("");
+  const [ok, setOk] = useState("");
 
-  function reservar(e) {
+  async function onSubmit(e) {
     e.preventDefault();
-    if (!profesionalId || !fecha || !hora) return;
+    setError("");
+    setOk("");
 
-    agregarTurno({
-      profesionalId,
-      fecha,
-      hora,
-      notas,
-    });
-
-    setProfesionalId("");
-    setFecha("");
-    setHora("");
-    setNotas("");
+    try {
+      await crearTurno({
+        profesional_id: Number(profesional_id),
+        fecha,
+        hora,
+        notas,
+      });
+      setOk("Turno reservado ✅");
+      setFecha("");
+      setHora("");
+      setNotas("");
+    } catch (err) {
+      setError(err.message || "Error");
+    }
   }
 
   return (
     <div>
-      <h3 style={{ marginTop: 0 }}>Sacar turno</h3>
+      <h3>Sacar turno</h3>
 
-      <form onSubmit={reservar} style={{ display: "grid", gap: 10 }}>
+      <form onSubmit={onSubmit}>
         <select
-          className="field"
-          value={profesionalId}
+          value={profesional_id}
           onChange={(e) => setProfesionalId(e.target.value)}
+          required
         >
           <option value="">Elegí un profesional</option>
           {profesionales.map((p) => (
@@ -41,30 +47,19 @@ export default function FormularioTurno({ profesionales, agregarTurno }) {
           ))}
         </select>
 
-        <input
-          className="field"
-          type="date"
-          value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-        />
+        <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required />
+        <input type="time" value={hora} onChange={(e) => setHora(e.target.value)} required />
 
         <input
-          className="field"
-          type="time"
-          value={hora}
-          onChange={(e) => setHora(e.target.value)}
-        />
-
-        <input
-          className="field"
           placeholder="Notas (opcional)"
           value={notas}
           onChange={(e) => setNotas(e.target.value)}
         />
 
-        <button className="btn" type="submit" style={{ justifySelf: "start" }}>
-          Reservar
-        </button>
+        <button type="submit">Reservar</button>
+
+        {error && <p style={{ color: "crimson" }}>✖ {error}</p>}
+        {ok && <p style={{ color: "green" }}>{ok}</p>}
       </form>
     </div>
   );

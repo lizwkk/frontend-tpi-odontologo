@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "../contexto/AuthContext";
+import { useAuth } from "../contexto/AuthContext.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginApi } = useAuth();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [pass, setPass] = useState("");
   const [error, setError] = useState("");
 
   async function iniciarSesion(e) {
@@ -15,27 +15,11 @@ export default function Login() {
     setError("");
 
     try {
-      const resp = await fetch("http://localhost:3000/api/usuarios/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, pass: password }),
-      });
-
-      if (!resp.ok) {
-        const msg = await resp.text();
-        setError(msg || "Error al iniciar sesión");
-        return;
-      }
-
-      const data = await resp.json(); // { ok, token, user }
-      login({ token: data.token, user: data.user });
-
-      // si es admin lo mando a /admin, si no a /inicio
-      if (data.user?.rol === "admin") navigate("/admin");
+      const user = await loginApi(email, pass);
+      if (user?.rol === "admin") navigate("/admin");
       else navigate("/inicio");
     } catch (err) {
-      console.error(err);
-      setError("No se pudo conectar con el backend");
+      setError(err.message || "Error");
     }
   }
 
@@ -44,18 +28,14 @@ export default function Login() {
       <div className="auth-card">
         <h2 className="auth-title">Iniciar sesión</h2>
 
-        {error && <p style={{ color: "crimson", marginBottom: 10 }}>{error}</p>}
-
         <form className="auth-form" onSubmit={iniciarSesion}>
           <label className="label">
             Email
             <input
               className="field"
               type="email"
-              placeholder="tuemail@mail.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
               required
             />
           </label>
@@ -65,13 +45,13 @@ export default function Login() {
             <input
               className="field"
               type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
               required
             />
           </label>
+
+          {error && <p className="auth-error">{error}</p>}
 
           <button className="btn" type="submit">
             Entrar

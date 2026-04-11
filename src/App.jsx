@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./contexto/AuthContext";
+import { useAuth } from "./contexto/AuthContext.jsx";
 
 import Login from "./paginas/Login";
 import Registro from "./paginas/Registro";
@@ -8,16 +8,16 @@ import Inicio from "./paginas/Inicio";
 import MisTurnos from "./paginas/MisTurnos";
 import Admin from "./paginas/Admin";
 
-function PrivateRoute({ children }) {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+function RutaPrivada({ children }) {
+  const { isAuth } = useAuth();
+  if (!isAuth) return <Navigate to="/login" replace />;
   return children;
 }
 
-function AdminRoute({ children }) {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  if (user.rol !== "admin") return <Navigate to="/inicio" replace />;
+function RutaAdmin({ children }) {
+  const { isAuth, isAdmin } = useAuth();
+  if (!isAuth) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/inicio" replace />;
   return children;
 }
 
@@ -33,27 +33,25 @@ export default function App() {
       <Route
         path="/inicio"
         element={
-          <PrivateRoute>
+          <RutaPrivada>
             <Inicio />
-          </PrivateRoute>
+          </RutaPrivada>
         }
       />
-
       <Route
         path="/mis-turnos"
         element={
-          <PrivateRoute>
+          <RutaPrivada>
             <MisTurnos />
-          </PrivateRoute>
+          </RutaPrivada>
         }
       />
-
       <Route
         path="/admin"
         element={
-          <AdminRoute>
+          <RutaAdmin>
             <Admin />
-          </AdminRoute>
+          </RutaAdmin>
         }
       />
 

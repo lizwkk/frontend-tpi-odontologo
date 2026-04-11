@@ -1,16 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../contexto/AuthContext.jsx";
 
 export default function Registro() {
   const navigate = useNavigate();
+  const { registerApi } = useAuth();
+
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState("");
+  const [ok, setOk] = useState("");
 
-  function registrar(e) {
+  async function registrar(e) {
     e.preventDefault();
-    // después conectamos backend
-    navigate("/login");
+    setError("");
+    setOk("");
+
+    try {
+      await registerApi(nombre, email, pass);
+      setOk("Usuario creado. Ahora iniciá sesión.");
+      setTimeout(() => navigate("/login"), 600);
+    } catch (err) {
+      setError(err.message || "Error");
+    }
   }
 
   return (
@@ -21,41 +34,21 @@ export default function Registro() {
         <form className="auth-form" onSubmit={registrar}>
           <label className="label">
             Nombre
-            <input
-              className="field"
-              placeholder="Tu nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              autoComplete="name"
-              required
-            />
+            <input className="field" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
           </label>
 
           <label className="label">
             Email
-            <input
-              className="field"
-              type="email"
-              placeholder="tuemail@mail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
+            <input className="field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </label>
 
           <label className="label">
             Contraseña
-            <input
-              className="field"
-              type="password"
-              placeholder="Creá una contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
+            <input className="field" type="password" value={pass} onChange={(e) => setPass(e.target.value)} required />
           </label>
+
+          {error && <p className="auth-error">{error}</p>}
+          {ok && <p className="auth-ok">{ok}</p>}
 
           <button className="btn" type="submit">
             Crear cuenta
@@ -64,10 +57,6 @@ export default function Registro() {
 
         <button className="linkLike" type="button" onClick={() => navigate("/login")}>
           Volver al login
-        </button>
-
-        <button className="linkLike" type="button" onClick={() => navigate("/home")}>
-          Volver al inicio
         </button>
       </div>
     </div>
