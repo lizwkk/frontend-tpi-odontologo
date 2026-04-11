@@ -1,11 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { useState } from "react";
-import { useAuth } from "../contexto/AuthContext.jsx";
+import axios from "axios";
 
 export default function Registro() {
-  const navigate = useNavigate();
-  const { registerApi } = useAuth();
-
+  const [, setLocation] = useLocation();
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
@@ -18,11 +16,20 @@ export default function Registro() {
     setOk("");
 
     try {
-      await registerApi(nombre, email, pass);
-      setOk("Usuario creado. Ahora iniciá sesión.");
-      setTimeout(() => navigate("/login"), 600);
+      // CORRECCIÓN AQUÍ: Quitamos "/registro" de la URL
+      await axios.post("http://localhost:3000/api/usuarios", { 
+        nombre, 
+        email, 
+        pass,
+        rol: "user" // Fijate si en tu BD es "user", "paciente" o "pacientes"
+      });
+      
+      setOk("✅ ¡Usuario creado con éxito! Redirigiendo...");
+      setTimeout(() => setLocation("/login"), 2000);
     } catch (err) {
-      setError(err.message || "Error");
+      console.error(err);
+      // Si el backend te manda un error específico, lo mostramos
+      setError(err.response?.data?.message || "Error al intentar registrarse");
     }
   }
 
@@ -48,15 +55,15 @@ export default function Registro() {
           </label>
 
           {error && <p className="auth-error">{error}</p>}
-          {ok && <p className="auth-ok">{ok}</p>}
+          {ok && <p className="auth-ok" style={{color: 'green', fontWeight: 'bold'}}>{ok}</p>}
 
           <button className="btn" type="submit">
             Crear cuenta
           </button>
         </form>
 
-        <button className="linkLike" type="button" onClick={() => navigate("/login")}>
-          Volver al login
+        <button className="linkLike" type="button" onClick={() => setLocation("/login")}>
+          ¿Ya tenés cuenta? Volver al login
         </button>
       </div>
     </div>

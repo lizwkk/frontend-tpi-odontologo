@@ -13,27 +13,32 @@ export default function Login({ onLogin }) {
     setError("");
 
     try {
-      const resp = await axios.post("http://localhost:5000/api/usuarios/login", { email, pass });
+      // CORRECCIÓN: La ruta correcta según tu main.js es /api/login
+      const resp = await axios.post("http://localhost:3000/api/login", { email, pass });
 
       if (resp.data.status === "ok") {
         localStorage.setItem("token", resp.data.token);
         localStorage.setItem("rol", resp.data.rol);
         localStorage.setItem("nombre", resp.data.nombre);
 
+        // Avisamos a App.jsx que ya estamos dentro
         onLogin(resp.data.token, resp.data.rol);
 
-        // Redirigimos según el rol
+        // Redirigimos según el rol que viene de la base de datos
         if (resp.data.rol === "admin") {
           setLocation("/admin");
         } else {
           setLocation("/inicio");
         }
-      } else {
-        setError("Usuario o contraseña incorrectos");
       }
     } catch (err) {
       console.error(err);
-      setError("Error de conexión con el servidor");
+      // Si el servidor tiró un 401 (Unauthorized), es por datos mal puestos
+      if (err.response?.status === 401) {
+        setError("Usuario o contraseña incorrectos");
+      } else {
+        setError("Error de conexión con el servidor");
+      }
     }
   };
 
@@ -65,7 +70,7 @@ export default function Login({ onLogin }) {
             />
           </label>
 
-          {error && <p className="auth-error">{error}</p>}
+          {error && <p className="auth-error" style={{color: 'red', textAlign: 'center'}}>{error}</p>}
 
           <button className="btn" type="submit">
             Entrar
@@ -76,7 +81,7 @@ export default function Login({ onLogin }) {
           ¿No tenés cuenta? Registrate
         </button>
 
-        <button className="linkLike" type="button" onClick={() => setLocation("/home")}>
+        <button className="linkLike" type="button" onClick={() => setLocation("/")}>
           Volver al inicio
         </button>
       </div>

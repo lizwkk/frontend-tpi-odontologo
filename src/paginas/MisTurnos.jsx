@@ -1,22 +1,36 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useTurnos } from "../contexto/TurnosContext.jsx";
+import { Link } from "wouter";
+import axios from "axios";
 
 export default function MisTurnos() {
-  const { misTurnos, cargarMisTurnos, eliminarMiTurno } = useTurnos();
+  const [misTurnos, setMisTurnos] = useState([]);
   const [msg, setMsg] = useState("");
+  const token = localStorage.getItem("token");
+
+  const cargarTurnos = async () => {
+    try {
+      const resp = await axios.get("http://localhost:5000/api/turnos/mis-turnos", {
+        headers: { Authorization: token }
+      });
+      setMisTurnos(resp.data);
+    } catch (e) {
+      setMsg("No se pudieron cargar tus turnos");
+    }
+  };
 
   useEffect(() => {
-    cargarMisTurnos().catch((e) => setMsg(e.message));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (token) cargarTurnos();
+  }, [token]);
 
   async function borrar(id) {
-    setMsg("");
+    if (!window.confirm("¿Seguro que querés cancelar este turno?")) return;
     try {
-      await eliminarMiTurno(id);
+      await axios.delete(`http://localhost:5000/api/turnos/${id}`, {
+        headers: { Authorization: token }
+      });
+      cargarTurnos(); // Recargamos la lista
     } catch (e) {
-      setMsg(e.message);
+      setMsg("Error al cancelar el turno");
     }
   }
 
@@ -24,12 +38,12 @@ export default function MisTurnos() {
     <div className="shell">
       <div className="shell-top">
         <h2 className="shell-title">Mis turnos</h2>
-        <Link className="shell-link" to="/inicio">
+        <Link className="shell-link" href="/inicio">
           Volver
         </Link>
       </div>
 
-      {msg && <p>{msg}</p>}
+      {msg && <p className="auth-error">{msg}</p>}
 
       <div className="panel">
         {misTurnos.length === 0 ? (
@@ -37,17 +51,17 @@ export default function MisTurnos() {
         ) : (
           <div style={{ display: "grid", gap: 10 }}>
             {misTurnos.map((t) => (
-              <div key={t.id} className="itemRow">
+              <div key={t.id_turno} className="itemRow">
                 <div>
-                  <b>{t.profesional_nombre}</b> — {t.profesional_especialidad}
+                  <b>{t.profesional_nombre}</b> — {t.especialidad}
                   <div className="muted">
-                    {String(t.fecha).slice(0, 10)} • {t.hora} • {t.estado}
+                    {t.fecha} • {t.hora} • {t.estado}
                   </div>
-                  {t.notas && <div className="muted">Nota: {t.notas}</div>}
                 </div>
 
-                <button className="btn" onClick={() => borrar(t.id)}>
-                  Borrar
+                <button className="btn-delete" onClick={() => borrar(t.id_turno)} 
+                        style={{backgroundColor: '#c20b0b', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px'}}>
+                  Cancelar
                 </button>
               </div>
             ))}
