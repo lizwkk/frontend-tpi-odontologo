@@ -1,27 +1,41 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "../contexto/AuthContext.jsx";
+import axios from "axios";
+import { useLocation } from "wouter";
 
-export default function Login() {
-  const navigate = useNavigate();
-  const { loginApi } = useAuth();
-
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
+  const [, setLocation] = useLocation();
 
-  async function iniciarSesion(e) {
+  const iniciarSesion = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const user = await loginApi(email, pass);
-      if (user?.rol === "admin") navigate("/admin");
-      else navigate("/inicio");
+      const resp = await axios.post("http://localhost:5000/api/usuarios/login", { email, pass });
+
+      if (resp.data.status === "ok") {
+        localStorage.setItem("token", resp.data.token);
+        localStorage.setItem("rol", resp.data.rol);
+        localStorage.setItem("nombre", resp.data.nombre);
+
+        onLogin(resp.data.token, resp.data.rol);
+
+        // Redirigimos según el rol
+        if (resp.data.rol === "admin") {
+          setLocation("/admin");
+        } else {
+          setLocation("/inicio");
+        }
+      } else {
+        setError("Usuario o contraseña incorrectos");
+      }
     } catch (err) {
-      setError(err.message || "Error");
+      console.error(err);
+      setError("Error de conexión con el servidor");
     }
-  }
+  };
 
   return (
     <div className="auth">
@@ -58,11 +72,11 @@ export default function Login() {
           </button>
         </form>
 
-        <button className="linkLike" type="button" onClick={() => navigate("/registro")}>
+        <button className="linkLike" type="button" onClick={() => setLocation("/registro")}>
           ¿No tenés cuenta? Registrate
         </button>
 
-        <button className="linkLike" type="button" onClick={() => navigate("/home")}>
+        <button className="linkLike" type="button" onClick={() => setLocation("/home")}>
           Volver al inicio
         </button>
       </div>
