@@ -9,11 +9,12 @@ export default function MisTurnos() {
 
   const cargarTurnos = async () => {
     try {
-      const resp = await axios.get("http://localhost:5000/api/turnos/mis-turnos", {
+      const resp = await axios.get("http://localhost:3000/api/turnos/mis-turnos", {
         headers: { Authorization: token }
       });
       setMisTurnos(resp.data);
     } catch (e) {
+      console.error(e);
       setMsg("No se pudieron cargar tus turnos");
     }
   };
@@ -25,10 +26,10 @@ export default function MisTurnos() {
   async function borrar(id) {
     if (!window.confirm("¿Seguro que querés cancelar este turno?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/turnos/${id}`, {
+      await axios.delete(`http://localhost:3000/api/turnos/${id}`, {
         headers: { Authorization: token }
       });
-      cargarTurnos(); // Recargamos la lista
+      cargarTurnos(); 
     } catch (e) {
       setMsg("Error al cancelar el turno");
     }
@@ -43,7 +44,7 @@ export default function MisTurnos() {
         </Link>
       </div>
 
-      {msg && <p className="auth-error">{msg}</p>}
+      {msg && <p className="auth-error" style={{color: 'red', textAlign: 'center'}}>{msg}</p>}
 
       <div className="panel">
         {misTurnos.length === 0 ? (
@@ -51,16 +52,19 @@ export default function MisTurnos() {
         ) : (
           <div style={{ display: "grid", gap: 10 }}>
             {misTurnos.map((t) => (
-              <div key={t.id_turno} className="itemRow">
+              <div key={t.id_turno} className="itemRow" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #eee' }}>
                 <div>
                   <b>{t.profesional_nombre}</b> — {t.especialidad}
-                  <div className="muted">
+                  <div className="muted" style={{ fontSize: '0.9em', color: '#666' }}>
                     {t.fecha} • {t.hora} • {t.estado}
                   </div>
                 </div>
 
-                <button className="btn-delete" onClick={() => borrar(t.id_turno)} 
-                        style={{backgroundColor: '#c20b0b', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px'}}>
+                <button 
+                  className="btn-delete" 
+                  onClick={() => borrar(t.id_turno)} 
+                  style={{ backgroundColor: '#c20b0b', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
+                >
                   Cancelar
                 </button>
               </div>
