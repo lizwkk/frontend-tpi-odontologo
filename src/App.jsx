@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Route, Switch, Redirect } from 'wouter'
 
 import Login from "./paginas/Login";
@@ -13,67 +13,49 @@ export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [rol, setRol] = useState(localStorage.getItem('rol'));
 
-  useEffect(() => {
-    const t = localStorage.getItem('token');
-    const r = localStorage.getItem('rol');
-    if (t) {
-      setToken(t);
-      setRol(r);
-    }
-  }, []);
+  const manejarLogin = (t, r) => {
+    setToken(t);
+    setRol(r);
+  };
 
   const manejarLogOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
     localStorage.removeItem('nombre');
+    localStorage.removeItem('id_usuario');
     setToken(null);
     setRol(null);
   };
 
-  if (!token) {
-    return (
-      <Switch>
-        <Route path="/home"><Home /></Route>
-        <Route path="/login">
-          <Login onLogin={(t, r) => { setToken(t); setRol(r); }} />
-        </Route>
-        <Route path="/registro">
-          <Registro /> 
-        </Route>
-        <Route path="/:rest*"><Redirect to="/home" /></Route> 
-      </Switch>
-    );
-  }
-
   return (
     <Switch>
-      <Route path="/">
-        <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />
+      {/* RUTAS PÚBLICAS */}
+      <Route path="/home"><Home /></Route>
+      <Route path="/registro"><Registro /></Route>
+      <Route path="/login">
+        {token ? <Redirect to="/inicio" /> : <Login onLogin={manejarLogin} />}
       </Route>
 
-    
-      {rol === "admin" && (
-        <Route path="/admin">
-          <Admin onLogout={manejarLogOut} />
-        </Route>
-      )}
+      {/* RUTAS PRIVADAS */}
+      <Route path="/admin">
+        {token && rol === "admin" ? <Admin onLogout={manejarLogOut} /> : <Redirect to="/login" />}
+      </Route>
 
-    
-      {rol !== "admin" && (
-        <Route path="/inicio">
-          <Inicio onLogout={manejarLogOut} />
-        </Route>
-      )}
+      <Route path="/inicio">
+        {token && rol !== "admin" ? <Inicio onLogout={manejarLogOut} /> : <Redirect to="/login" />}
+      </Route>
 
+      <Route path="/mis-turnos">
+        {token && rol !== "admin" ? <MisTurnos onLogout={manejarLogOut} /> : <Redirect to="/login" />}
+      </Route>
+
+      {/* REDIRECCIÓN POR DEFECTO */}
+      <Route path="/">
+        {!token ? <Home /> : <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />}
+      </Route>
       
-      {rol !== "admin" && (
-        <Route path="/mis-turnos">
-          <MisTurnos onLogout={manejarLogOut} />
-        </Route>
-      )}
-
       <Route path="/:rest*">
-        <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />
+        <Redirect to="/" />
       </Route>
     </Switch>
   );

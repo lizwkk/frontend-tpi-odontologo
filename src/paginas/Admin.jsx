@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+// Usamos tus rutas exactas según la foto:
 import AgregarAdmin from "./paneladmin/AgregarAdmin.jsx";
 import UsuariosAdmin from "./paneladmin/UsuariosAdmin.jsx";
 import TurnosAdmin from "./paneladmin/TurnosAdmin.jsx"; 
@@ -7,7 +8,9 @@ import TurnosAdmin from "./paneladmin/TurnosAdmin.jsx";
 export default function Admin({ onLogout }) {
   const [usuarios, setUsuarios] = useState([]);
   const [turnos, setTurnos] = useState([]); 
+  
   const token = localStorage.getItem("token");
+  const rol = localStorage.getItem("rol");
 
   const obtenerUsuarios = async () => {
     try {
@@ -32,9 +35,21 @@ export default function Admin({ onLogout }) {
   };
 
   useEffect(() => {
-    obtenerUsuarios();
-    obtenerTurnos();
-  }, []);
+    if (rol === "admin") {
+      obtenerUsuarios();
+      obtenerTurnos();
+    }
+  }, [rol]);
+
+  if (rol !== "admin") {
+    return (
+      <div className="shell">
+        <h2 style={{color: 'red', textAlign: 'center', marginTop: '50px'}}>
+          Acceso Denegado: No tenés permisos de administrador.
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="shell">
@@ -46,7 +61,6 @@ export default function Admin({ onLogout }) {
       <div className="admin-grid" style={{ display: 'grid', gap: '20px' }}>
         <AgregarAdmin onActualizar={obtenerUsuarios} token={token} />
         <UsuariosAdmin usuarios={usuarios} onActualizar={obtenerUsuarios} token={token} />
-        
         <TurnosAdmin turnos={turnos} onActualizar={obtenerTurnos} token={token} />
       </div>
     </div>

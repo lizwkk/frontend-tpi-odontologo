@@ -7,10 +7,10 @@ export default function UsuariosAdmin({ usuarios, onActualizar }) {
     if (!window.confirm("¿Estás seguro de eliminar este usuario?")) return;
     
     try {
-      await axios.delete(`http://localhost:5000/api/usuarios/${id}`, {
+      await axios.delete(`http://localhost:3000/api/usuarios/${id}`, {
         headers: { Authorization: token }
       });
-      onActualizar(); // Refresca la lista
+      onActualizar(); 
     } catch (error) {
       console.error(error);
       alert("No se pudo eliminar el usuario");

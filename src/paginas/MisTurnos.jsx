@@ -48,22 +48,41 @@ export default function MisTurnos() {
 
       <div className="panel">
         {misTurnos.length === 0 ? (
-          <p>No tenés turnos todavía.</p>
+          <p style={{ textAlign: 'center', padding: '20px' }}>No tenés turnos todavía.</p>
         ) : (
           <div style={{ display: "grid", gap: 10 }}>
             {misTurnos.map((t) => (
-              <div key={t.id_turno} className="itemRow" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #eee' }}>
+              <div key={t.id} className="itemRow" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px', borderBottom: '1px solid #eee', background: 'white', borderRadius: '8px' }}>
                 <div>
-                  <b>{t.profesional_nombre}</b> — {t.especialidad}
-                  <div className="muted" style={{ fontSize: '0.9em', color: '#666' }}>
-                    {t.fecha} • {t.hora} • {t.estado}
+                  <b style={{ color: '#2c3e50', fontSize: '1.1em' }}>{t.profesional_nombre}</b>
+                  <div className="muted" style={{ fontSize: '0.9em', color: '#666', marginTop: '5px' }}>
+                    <span>📅 {t.fecha && t.fecha !== "0000-00-00" ? new Date(t.fecha).toLocaleDateString() : "Fecha a confirmar"}</span>
+                    <span style={{ marginLeft: '10px' }}>⏰ {t.hora ? t.hora.substring(0, 5) : "--:--"} hs</span>
                   </div>
+                  <div style={{ fontSize: '0.85em', color: '#888', marginTop: '4px' }}>
+                    Estado: <span style={{ 
+                      fontWeight: 'bold', 
+                      color: (t.estado === 'reservado' || !t.estado) ? '#27ae60' : '#c0392b',
+                      textTransform: 'capitalize'
+                    }}>
+                      {t.estado || "reservado"}
+                    </span>
+                  </div>
+                  {t.notas && <div style={{fontSize: '0.8em', fontStyle: 'italic', marginTop: '5px', color: '#555'}}>Nota: {t.notas}</div>}
                 </div>
 
                 <button 
                   className="btn-delete" 
-                  onClick={() => borrar(t.id_turno)} 
-                  style={{ backgroundColor: '#c20b0b', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => borrar(t.id)} 
+                  style={{ 
+                    backgroundColor: '#c20b0b', 
+                    color: 'white', 
+                    border: 'none', 
+                    padding: '8px 15px', 
+                    borderRadius: '5px', 
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
                 >
                   Cancelar
                 </button>

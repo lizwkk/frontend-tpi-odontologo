@@ -11,7 +11,7 @@ export default function AgregarAdmin({ onActualizar }) {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/api/usuarios/registro", // Ajustá a tu ruta de backend
+        "http://localhost:3000/api/usuarios/registro",
         { nombre, email, pass, rol: "admin" },
         { headers: { Authorization: token } }
       );
@@ -20,7 +20,7 @@ export default function AgregarAdmin({ onActualizar }) {
       setNombre("");
       setEmail("");
       setPass("");
-      onActualizar(); // Esto refresca la lista en el componente padre
+      onActualizar(); 
     } catch (error) {
       console.error(error);
       alert("Error al agregar");
