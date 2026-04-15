@@ -33,7 +33,7 @@ export default function UsuariosAdmin({ usuarios, onActualizar }) {
               </div>
               <button 
                 className="btn-delete" 
-                onClick={() => eliminarUsuario(u.id_usuario)}
+                onClick={() => eliminarUsuario(u.id)}
                 style={{ backgroundColor: '#c20b0b', color: 'white', border: 'none', borderRadius: '4px', padding: '5px 10px', cursor: 'pointer' }}
               >
                 Eliminar
