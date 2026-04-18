@@ -67,7 +67,6 @@ export default function Admin({ onLogout }) {
 
       <div className="admin-grid" style={{ display: 'grid', gap: '20px' }}>
         <AgregarAdmin onActualizar={obtenerUsuarios} token={token} />
-        {/* Pasamos los datos ya validados */}
         <UsuariosAdmin usuarios={usuarios} onActualizar={obtenerUsuarios} token={token} />
         <TurnosAdmin turnos={turnos} onActualizar={obtenerTurnos} token={token} />
       </div>

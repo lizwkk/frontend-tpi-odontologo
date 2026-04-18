@@ -12,12 +12,13 @@ export default function Inicio({ onLogout }) {
   const [msg, setMsg] = useState("");
 
   const nombreUsuario = localStorage.getItem("nombre") || "Paciente";
-  const token = localStorage.getItem("token");
+ const token = localStorage.getItem("token");
 
   async function reservar(e) {
     e.preventDefault();
     setMsg(""); 
 
+    
     if (!profesional_id) return setMsg("❌ Por favor, elegí un profesional");
     if (!token) return setMsg("❌ No hay sesión activa. Volvé a loguearte.");
 
@@ -29,12 +30,16 @@ export default function Inicio({ onLogout }) {
           hora, 
           notas 
         },
-        { headers: { Authorization: token } }
+        { 
+          headers: { 
+            // IMPORTANTE: Agregar "Bearer " antes del token
+            Authorization: token 
+          } 
+        }
       );
 
       if (resp.status === 201 || resp.data.status === "ok") {
         setMsg("✅ ¡Turno reservado con éxito!");
-        // Limpiamos el formulario
         setProfesionalId(""); 
         setFecha(""); 
         setHora(""); 
@@ -42,7 +47,6 @@ export default function Inicio({ onLogout }) {
       }
     } catch (err) {
       console.error("Error en reserva:", err.response);
-      
       if (err.response?.status === 401) {
         setMsg("❌ Sesión expirada. Por favor, salí y volvé a entrar.");
       } else {

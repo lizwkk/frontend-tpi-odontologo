@@ -28,7 +28,7 @@ export default function Login({ onLogin }) {
                 email, 
                 pass 
             });
-
+            console.log("Respuesta del servidor:", resp.data);
             if (resp.data.status === "ok") {
                 // Guardamos todos los datos necesarios
                 localStorage.setItem("token", resp.data.token);

@@ -10,12 +10,9 @@ export default function AgregarAdmin({ onActualizar }) {
   const agregar = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "http://localhost:3000/api/usuarios/registro",
-        { nombre, email, pass, rol: "admin" },
-        { headers: { Authorization: token } }
-      );
-      
+     await axios.post("http://localhost:3000/api/usuarios", { nombre, email, pass, rol: "admin" }, {
+     headers: { Authorization: token }
+     });
       alert("Administrador agregado con éxito");
       setNombre("");
       setEmail("");
