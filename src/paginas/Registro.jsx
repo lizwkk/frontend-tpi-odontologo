@@ -21,7 +21,7 @@ export default function Registro() {
         nombre, 
         email, 
         pass,
-        rol: "user" // Fijate si en tu BD es "user", "paciente" o "pacientes"
+        rol: "paciente"
       });
       
       setOk("✅ ¡Usuario creado con éxito! Redirigiendo...");

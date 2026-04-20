@@ -25,7 +25,7 @@ export default function UsuariosAdmin({ usuarios, onActualizar }) {
           <p>No hay usuarios registrados.</p>
         ) : (
           usuarios.map((u) => (
-            <div key={u.id_usuario} className="itemRow">
+            <div key={u.id} className="itemRow">
               <div>
                 <b>{u.nombre}</b> <span className="muted">({u.rol})</span>
                 <br />

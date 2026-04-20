@@ -3,6 +3,9 @@ import axios from "axios";
 import AgregarAdmin from "./paneladmin/AgregarAdmin.jsx";
 import UsuariosAdmin from "./paneladmin/UsuariosAdmin.jsx";
 import TurnosAdmin from "./paneladmin/TurnosAdmin.jsx"; 
+import ProfesionalesAdmin from "./paneladmin/ProfesionalesAdmin.jsx";
+import FormularioProfesional from "../componentes/profesionales/FormularioProfesional.jsx";
+import ListadoProfesionales from "../componentes/profesionales/ListadoProfesionales.jsx";
 
 export default function Admin({ onLogout }) {
   const [usuarios, setUsuarios] = useState([]);
@@ -70,6 +73,7 @@ export default function Admin({ onLogout }) {
         <UsuariosAdmin usuarios={usuarios} onActualizar={obtenerUsuarios} token={token} />
         <TurnosAdmin turnos={turnos} onActualizar={obtenerTurnos} token={token} />
       </div>
+      
     </div>
   );
 }
