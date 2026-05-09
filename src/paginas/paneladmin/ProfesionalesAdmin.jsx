@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import FormularioProfesional from "../../componentes/profesionales/FormularioProfesional.jsx";
+import ListadoProfesionales from "../../componentes/profesionales/ListadoProfesionales.jsx";
 
-export default function ProfesionalesAdmin() {
+export default function ProfesionalesAdmin({ token }) {
   const [profesionales, setProfesionales] = useState([]);
-  const token = localStorage.getItem("token");
 
   const cargar = async () => {
     try {
@@ -24,7 +25,7 @@ export default function ProfesionalesAdmin() {
   };
 
   const eliminar = async (id) => {
-    if (!window.confirm("¿Borrar médico?")) return;
+    if (!window.confirm("¿Borrar profesional?")) return;
     try {
       await axios.delete(`http://localhost:3000/api/profesionales/${id}`, {
         headers: { Authorization: token }
@@ -35,9 +36,8 @@ export default function ProfesionalesAdmin() {
 
   return (
     <div className="panel">
-      {/* Usamos tus componentes chiquitos aquí dentro */}
       <FormularioProfesional agregarProfesional={agregar} />
-      <hr style={{ margin: "20px 0", opacity: 0.2 }} />
+      <hr style={{margin: '20px 0'}} />
       <ListadoProfesionales profesionales={profesionales} eliminarProfesional={eliminar} />
     </div>
   );
