@@ -3,10 +3,9 @@ import { Route, Switch, Redirect } from 'wouter'
 
 import Login from "./paginas/Login";
 import Registro from "./paginas/Registro"; 
-import Home from "./paginas/Home";
 import Inicio from "./paginas/Inicio";
-import MisTurnos from "./paginas/MisTurnos";
 import Admin from "./paginas/Admin";
+import MisTurnos from "./paginas/MisTurnos";
 import './App.css'
 
 export default function App() {
@@ -29,11 +28,18 @@ export default function App() {
 
   return (
     <Switch>
+      {/* 🔐 LA RUTA RAÍZ AHORA ES TU LOGIN DIRECTAMENTE */}
+      <Route path="/">
+        {!token ? <Login onLogin={manejarLogin} /> : <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />}
+      </Route>
+
       {/* RUTAS PÚBLICAS */}
-      <Route path="/home"><Home /></Route>
-      <Route path="/registro"><Registro /></Route>
+      <Route path="/registro">
+        {token ? <Redirect to={rol === "admin" ? "/admin" : "/inicio"} /> : <Registro />}
+      </Route>
+      
       <Route path="/login">
-        {token ? <Redirect to="/inicio" /> : <Login onLogin={manejarLogin} />}
+        {token ? <Redirect to={rol === "admin" ? "/admin" : "/inicio"} /> : <Login onLogin={manejarLogin} />}
       </Route>
 
       {/* RUTAS PRIVADAS */}
@@ -45,15 +51,12 @@ export default function App() {
         {token && rol !== "admin" ? <Inicio onLogout={manejarLogOut} /> : <Redirect to="/login" />}
       </Route>
 
+      {/* 🔒 RUTA PRIVADA PROTEGIDA: MIS TURNOS */}
       <Route path="/mis-turnos">
-        {token && rol !== "admin" ? <MisTurnos onLogout={manejarLogOut} /> : <Redirect to="/login" />}
-      </Route>
-
-      {/* REDIRECCIÓN POR DEFECTO */}
-      <Route path="/">
-        {!token ? <Home /> : <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />}
+        {token && rol !== "admin" ? <MisTurnos /> : <Redirect to="/login" />}
       </Route>
       
+      {/* CUALQUIER OTRA RUTA RARA VUELVE AL LOGIN */}
       <Route path="/:rest*">
         <Redirect to="/" />
       </Route>

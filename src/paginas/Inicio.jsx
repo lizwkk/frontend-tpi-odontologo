@@ -1,6 +1,6 @@
-import { useLocation, Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
+import { useLocation } from "wouter";
 import { useProfesionales } from "../hooks/useProfesionales.jsx";
 
 export default function Inicio({ onLogout }) {
@@ -9,122 +9,67 @@ export default function Inicio({ onLogout }) {
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
   const [notas, setNotas] = useState("");
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState({ tipo: "", texto: "" });
+  const [, setLocation] = useLocation();
 
   const nombreUsuario = localStorage.getItem("nombre") || "Paciente";
- const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   async function reservar(e) {
     e.preventDefault();
-    setMsg(""); 
-
-    
-    if (!profesional_id) return setMsg("❌ Por favor, elegí un profesional");
-    if (!token) return setMsg("❌ No hay sesión activa. Volvé a loguearte.");
+    setMsg({ tipo: "", texto: "" });
+    const tokenLimpio = token?.replace("Bearer ", "").trim();
 
     try {
-      const resp = await axios.post("http://localhost:3000/api/turnos", 
-        { 
-          id_profesional: Number(profesional_id), 
-          fecha, 
-          hora, 
-          notas 
-        },
-        { 
-          headers: { 
-            // IMPORTANTE: Agregar "Bearer " antes del token
-            Authorization: token 
-          } 
-        }
+      await axios.post("http://localhost:3000/api/turnos", 
+        { id_profesional: Number(profesional_id), fecha, hora, notas },
+        { headers: { Authorization: tokenLimpio } }
       );
-
-      if (resp.status === 201 || resp.data.status === "ok") {
-        setMsg("✅ ¡Turno reservado con éxito!");
-        setProfesionalId(""); 
-        setFecha(""); 
-        setHora(""); 
-        setNotas("");
-      }
+      setMsg({ tipo: "ok", texto: "✅ ¡Turno reservado con éxito!" });
+      setFecha(""); setHora(""); setNotas(""); setProfesionalId("");
     } catch (err) {
-      console.error("Error en reserva:", err.response);
-      if (err.response?.status === 401) {
-        setMsg("❌ Sesión expirada. Por favor, salí y volvé a entrar.");
-      } else {
-        setMsg("❌ Error: " + (err.response?.data?.message || "No se pudo realizar la reserva"));
-      }
+      setMsg({ tipo: "error", texto: "❌ Error al reservar. Intentá de nuevo." });
     }
   }
 
   return (
-    <div className="shell">
-      <div className="shell-top">
-        <h2 className="shell-title">Hola, {nombreUsuario}</h2>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Link href="/mis-turnos" className="shell-link">Mis Turnos</Link>
-          <button onClick={onLogout} className="logout-button">Salir</button>
+    <div style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#f4f7f6", minHeight: "100vh" }}>
+      {/* HEADER UNIFICADO */}
+      <header style={{ backgroundColor: "#0b4d48", color: "white", padding: "20px 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: "24px" }}>Sonrisa Austral</h1>
+          <p style={{ margin: 0, fontSize: "14px", opacity: 0.8 }}>Hola, {nombreUsuario}</p>
         </div>
-      </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={() => setLocation("/mis-turnos")} style={{ background: "white", color: "#0b4d48", border: "none", padding: "8px 12px", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}>Mis Turnos</button>
+          <button onClick={onLogout} style={{ background: "#dc3545", color: "white", border: "none", padding: "8px 12px", borderRadius: "5px", cursor: "pointer" }}>Salir</button>
+        </div>
+      </header>
 
-      <div className="panel">
-        <h3 style={{ marginBottom: '15px', color: '#2c3e50' }}>Reservar un nuevo turno</h3>
-        <form onSubmit={reservar} style={{ display: "grid", gap: "12px" }}>
-          
-          <label style={{ fontSize: '0.9em', color: '#666' }}>Profesional:</label>
-          <select 
-            className="field" 
-            value={profesional_id} 
-            onChange={e => setProfesionalId(e.target.value)} 
-            required
-          >
-            <option value="">{loading ? "Cargando profesionales..." : "Seleccioná un especialista"}</option>
-            {profesionales.map(p => (
-              <option key={p.id} value={p.id}>{p.nombre} — {p.especialidad}</option>
-            ))}
+      {/* CONTENEDOR DE FORMULARIO */}
+      <div style={{ maxWidth: "600px", margin: "40px auto", padding: "30px", backgroundColor: "white", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+        <h2 style={{ color: "#0b4d48", textAlign: "center" }}>Nueva Reserva</h2>
+        
+        {msg.texto && (
+          <p style={{ padding: "10px", borderRadius: "5px", textAlign: "center", backgroundColor: msg.tipo === "ok" ? "#d4edda" : "#f8d7da" }}>
+            {msg.texto}
+          </p>
+        )}
+
+        <form onSubmit={reservar} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <select value={profesional_id} onChange={(e) => setProfesionalId(e.target.value)} required style={{ padding: "12px", borderRadius: "6px", border: "1px solid #cedddc" }}>
+            <option value="">Elegí un profesional</option>
+            {profesionales.map(p => <option key={p.id} value={p.id}>{p.nombre} — {p.especialidad}</option>)}
           </select>
 
-          <label style={{ fontSize: '0.9em', color: '#666' }}>Fecha:</label>
-          <input 
-            type="date" 
-            className="field" 
-            value={fecha} 
-            onChange={e => setFecha(e.target.value)} 
-            required 
-          />
+          <div style={{ display: "flex", gap: "10px" }}>
+            <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} required style={{ flex: 1, padding: "12px", borderRadius: "6px", border: "1px solid #cedddc" }} />
+            <input type="time" value={hora} onChange={e => setHora(e.target.value)} required style={{ flex: 1, padding: "12px", borderRadius: "6px", border: "1px solid #cedddc" }} />
+          </div>
 
-          <label style={{ fontSize: '0.9em', color: '#666' }}>Hora:</label>
-          <input 
-            type="time" 
-            className="field" 
-            value={hora} 
-            onChange={e => setHora(e.target.value)} 
-            required 
-          />
+          <textarea placeholder="Notas adicionales (opcional)" value={notas} onChange={e => setNotas(e.target.value)} style={{ padding: "12px", borderRadius: "6px", border: "1px solid #cedddc" }} />
 
-          <label style={{ fontSize: '0.9em', color: '#666' }}>Notas adicionales:</label>
-          <input 
-            placeholder="Ej: Primera consulta, control, etc." 
-            className="field" 
-            value={notas} 
-            onChange={e => setNotas(e.target.value)} 
-          />
-
-          <button type="submit" className="btn" style={{ marginTop: '10px' }}>
-            Confirmar Reserva
-          </button>
-
-          {msg && (
-            <p style={{ 
-              textAlign: "center", 
-              fontWeight: 'bold',
-              padding: '10px',
-              borderRadius: '5px',
-              backgroundColor: msg.includes('✅') ? '#d4edda' : '#f8d7da',
-              color: msg.includes('✅') ? '#155724' : '#721c24',
-              marginTop: '10px'
-            }}>
-              {msg}
-            </p>
-          )}
+          <button type="submit" style={{ backgroundColor: "#14857c", color: "white", padding: "12px", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>Confirmar Reserva</button>
         </form>
       </div>
     </div>

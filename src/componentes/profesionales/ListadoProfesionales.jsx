@@ -1,4 +1,22 @@
-export default function ListadoProfesionales({ profesionales, eliminarProfesional }) {
+export default function ListadoProfesionales({ profesionales, eliminarProfesional, editarProfesional }) {
+  
+  const manejarEdicion = (p) => {
+    const nuevoNombre = prompt("Modificar nombre del profesional:", p.nombre);
+    // Si presiona cancelar en el primer prompt, frena el proceso
+    if (nuevoNombre === null) return; 
+
+    const nuevaEspecialidad = prompt("Modificar especialidad:", p.especialidad);
+    // Si presiona cancelar en el segundo prompt, también frena
+    if (nuevaEspecialidad === null) return;
+
+    // Si completó ambos campos, enviamos los datos limpios de espacios al componente padre
+    if (nuevoNombre.trim() !== "" && nuevaEspecialidad.trim() !== "") {
+      editarProfesional(p.id, nuevoNombre.trim(), nuevaEspecialidad.trim());
+    } else {
+      alert("Los campos no pueden quedar vacíos.");
+    }
+  };
+
   return (
     <div>
       <h3 style={{ marginTop: 0 }}>Profesionales</h3>
@@ -30,15 +48,31 @@ export default function ListadoProfesionales({ profesionales, eliminarProfesiona
                 </div>
               </div>
 
-              <button
-                className="btn ghost small"
-                type="button"
-                onClick={() => eliminarProfesional(p.id)}
-                title="Eliminar profesional"
-                style={{ borderColor: "rgba(239,68,68,.35)" }}
-              >
-                ❌
-              </button>
+              {/* Contenedor para alinear los dos botones juntos */}
+              <div style={{ display: "flex", gap: 8 }}>
+                {/* ✏️ BOTÓN NUEVO PARA ACTUALIZAR */}
+                <button
+                  className="btn ghost small"
+                  type="button"
+                  onClick={() => manejarEdicion(p)}
+                  title="Editar profesional"
+                  style={{ borderColor: "rgba(0,123,255,.35)", cursor: "pointer" }}
+                >
+                  Editar
+                </button>
+
+                {/* ❌ BOTÓN PARA ELIMINAR */}
+                <button
+                  className="btn ghost small"
+                  type="button"
+                  onClick={() => eliminarProfesional(p.id)}
+                  title="Eliminar profesional"
+                  style={{ borderColor: "rgba(239,68,68,.35)", cursor: "pointer" }}
+                >
+                  ❌
+                </button>
+              </div>
+
             </div>
           ))}
         </div>
