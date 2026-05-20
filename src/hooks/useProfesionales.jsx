@@ -1,34 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export function useProfesionales() {
   const [profesionales, setProfesionales] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  function agregarProfesional(prof) {
-    const nuevo = {
-      id: Date.now(), // simula id de BD
-      activo: true,
-      ...prof,
-    };
-    setProfesionales([...profesionales, nuevo]);
-  }
-
-  function eliminarProfesional(id) {
-    setProfesionales(profesionales.filter((p) => p.id !== id));
-  }
-
-  function toggleActivo(id) {
-    setProfesionales(
-      profesionales.map((p) =>
-        p.id === id ? { ...p, activo: !p.activo } : p
-      )
-    );
-  }
-
-  return {
-    profesionales,
-    agregarProfesional,
-    eliminarProfesional,
-    toggleActivo,
-    setProfesionales,
+  const cargarDatos = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/profesionales");
+      setProfesionales(res.data);
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    cargarDatos();
+  }, []);
+
+  return { profesionales, loading };
 }

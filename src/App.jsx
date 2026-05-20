@@ -1,25 +1,65 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from 'react'
+import { Route, Switch, Redirect } from 'wouter'
+
 import Login from "./paginas/Login";
-import Registro from "./paginas/Registro";
-import Home from "./paginas/Home";
+import Registro from "./paginas/Registro"; 
 import Inicio from "./paginas/Inicio";
-import MisTurnos from "./paginas/MisTurnos";
 import Admin from "./paginas/Admin";
+import MisTurnos from "./paginas/MisTurnos";
+import './App.css'
 
 export default function App() {
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [rol, setRol] = useState(localStorage.getItem('rol'));
+
+  const manejarLogin = (t, r) => {
+    setToken(t);
+    setRol(r);
+  };
+
+  const manejarLogOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('nombre');
+    localStorage.removeItem('id_usuario');
+    setToken(null);
+    setRol(null);
+  };
+
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="/home" element={<Home />} />
+    <Switch>
+      {/* 🔐 LA RUTA RAÍZ AHORA ES TU LOGIN DIRECTAMENTE */}
+      <Route path="/">
+        {!token ? <Login onLogin={manejarLogin} /> : <Redirect to={rol === "admin" ? "/admin" : "/inicio"} />}
+      </Route>
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/registro" element={<Registro />} />
+      {/* RUTAS PÚBLICAS */}
+      <Route path="/registro">
+        {token ? <Redirect to={rol === "admin" ? "/admin" : "/inicio"} /> : <Registro />}
+      </Route>
+      
+      <Route path="/login">
+        {token ? <Redirect to={rol === "admin" ? "/admin" : "/inicio"} /> : <Login onLogin={manejarLogin} />}
+      </Route>
 
-      <Route path="/inicio" element={<Inicio />} />
-      <Route path="/mis-turnos" element={<MisTurnos />} />
-      <Route path="/admin" element={<Admin />} />
+      {/* RUTAS PRIVADAS */}
+      <Route path="/admin">
+        {token && rol === "admin" ? <Admin onLogout={manejarLogOut} /> : <Redirect to="/login" />}
+      </Route>
 
-      <Route path="*" element={<Navigate to="/home" replace />} />
-    </Routes>
+      <Route path="/inicio">
+        {token && rol !== "admin" ? <Inicio onLogout={manejarLogOut} /> : <Redirect to="/login" />}
+      </Route>
+
+      {/* 🔒 RUTA PRIVADA PROTEGIDA: MIS TURNOS */}
+      <Route path="/mis-turnos">
+        {token && rol !== "admin" ? <MisTurnos /> : <Redirect to="/login" />}
+      </Route>
+      
+      {/* CUALQUIER OTRA RUTA RARA VUELVE AL LOGIN */}
+      <Route path="/:rest*">
+        <Redirect to="/" />
+      </Route>
+    </Switch>
   );
 }
